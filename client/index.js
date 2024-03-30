@@ -9,8 +9,19 @@ function insertIds(users) {
   let div = document.getElementById("d1");
   div.innerHTML = "";
   users.forEach((e) => {
-    div.innerHTML += `user soketId : ${e.soketId} / user peerId ${e.preeId} <br>`;
+    div.innerHTML += `user soketId : ${e.soketId} / user peerId <button class="man">${e.preeId}</button> <br>`;
   });
+
+  //##########################################################################################################################
+
+  let buton = document.querySelectorAll(".man");
+  buton.forEach((e) => {
+    e.addEventListener("click", () => {
+      callUser(e.innerHTML);
+    });
+  });
+
+  //##########################################################################################################################
 }
 
 function callUser(preeId) {
@@ -20,7 +31,7 @@ function callUser(preeId) {
       video: true,
     })
     .then((stream) => {
-      peer.call(preeId, stream);
+      let call = peer.call(preeId, stream);
       call.on("stream", (stream) => {
         videoappend(stream);
       });
@@ -66,19 +77,7 @@ peer.on("call", (call) => {
 function videoappend(stream) {
   let video = document.getElementById("v1");
   video.srcObject = stream;
-  addEventListener("loadedmetadata", () => {
+  video.addEventListener("loadedmetadata", () => {
     video.play();
   });
 }
-
-navigator.mediaDevices
-  .getUserMedia({
-    audio: true,
-    video: true,
-  })
-  .then((stream) => {
-    videoappend(stream);
-  })
-  .catch((error) => {
-    console.log(error);
-  });
