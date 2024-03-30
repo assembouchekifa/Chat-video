@@ -26,7 +26,12 @@ const io = new Server(server, {
 const users = [];
 
 io.on("connection", (socket) => {
-  users.push({ name: "user", soketId: socket.id, peerID: undefined });
+  users.push({
+    name: "user",
+    soketId: socket.id,
+    peerID: undefined,
+    incall: false,
+  });
   io.emit("userchang", users);
   socket.on("sendPeerId", (data) => {
     for (let i = 0; i < users.length; i++) {
@@ -41,6 +46,15 @@ io.on("connection", (socket) => {
     for (let i = 0; i < users.length; i++) {
       if (users[i].soketId == socket.id) {
         users[i].name = data;
+        io.emit("userchang", users);
+      }
+    }
+  });
+
+  socket.on("incallnow", (data) => {
+    for (let i = 0; i < users.length; i++) {
+      if (users[i].soketId == socket.id) {
+        users[i].incall = data;
         io.emit("userchang", users);
       }
     }
