@@ -66,6 +66,9 @@ peer.on("call", (call) => {
 function videoappend(stream) {
   let video = document.getElementById("v1");
   video.srcObject = stream;
+  addEventListener("loadedmetadata", () => {
+    video.play();
+  });
 }
 
 navigator.mediaDevices
