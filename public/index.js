@@ -1,7 +1,10 @@
 import { io } from "https://cdn.socket.io/4.7.5/socket.io.esm.min.js";
 
-const socket = io("http://localhost:3000");
-const peer = new Peer();
+const socket = io("/");
+const peer = new Peer(undefined, {
+  host: "/",
+  port: 3001,
+});
 let users = [];
 let preeIdClient;
 
@@ -77,7 +80,19 @@ peer.on("call", (call) => {
 function videoappend(stream) {
   let video = document.getElementById("v1");
   video.srcObject = stream;
-  video.addEventListener("loadedmetadata", () => {
+  video.onloadedmetadata = () => {
     video.play();
-  });
+  };
 }
+
+// navigator.mediaDevices
+//   .getUserMedia({
+//     audio: true,
+//     video: true,
+//   })
+//   .then((stream) => {
+//     videoappend(stream);
+//   })
+//   .catch((error) => {
+//     console.log(error);
+//   });
