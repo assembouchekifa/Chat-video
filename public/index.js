@@ -1,7 +1,7 @@
 import { io } from "https://cdn.socket.io/4.7.5/socket.io.esm.min.js";
 
 const socket = io("/");
-const peer = new Peer(undefined, { host: "/", port: 3001 });
+const peer = new Peer();
 let users = [];
 let preeIdClient;
 const gridVid = document.getElementById("cont");
