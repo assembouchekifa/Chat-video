@@ -13,7 +13,7 @@ app.set("view engine", "ejs");
 app.use(express.static("public"));
 
 app.get("/", (req, res) => {
-  res.render("index");
+  res.render("index", req.params);
 });
 
 const io = new Server(server, {
@@ -26,7 +26,7 @@ const io = new Server(server, {
 const users = [];
 
 io.on("connection", (socket) => {
-  users.push({ name: undefined, soketId: socket.id, peerID: undefined });
+  users.push({ name: "user", soketId: socket.id, peerID: undefined });
   io.emit("userchang", users);
   socket.on("sendPeerId", (data) => {
     for (let i = 0; i < users.length; i++) {
@@ -36,6 +36,16 @@ io.on("connection", (socket) => {
       }
     }
   });
+
+  socket.on("namechang", (data) => {
+    for (let i = 0; i < users.length; i++) {
+      if (users[i].soketId == socket.id) {
+        users[i].name = data;
+        io.emit("userchang", users);
+      }
+    }
+  });
+
   socket.on("disconnect", (data) => {
     for (let i = 0; i < users.length; i++) {
       if (users[i].soketId == socket.id) {

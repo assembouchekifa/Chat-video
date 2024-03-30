@@ -1,30 +1,31 @@
 import { io } from "https://cdn.socket.io/4.7.5/socket.io.esm.min.js";
 
 const socket = io("/");
-const peer = new Peer(undefined, {
-  host: "/",
-  port: 3001,
-});
+const peer = new Peer();
 let users = [];
 let preeIdClient;
+const gridVid = document.getElementById("cont");
+const inp = document.getElementById("name");
+
+inp.addEventListener("change", (e) => {
+  console.log(inp.value);
+  socket.emit("namechang", inp.value);
+});
 
 function insertIds(users) {
-  let div = document.getElementById("d1");
-  div.innerHTML = "";
+  let div = document.getElementById("divusers");
+  div.innerHTML =
+    'users online is <sub style="font-size: x-small" >click to call</sub> : ';
   users.forEach((e) => {
-    div.innerHTML += `user soketId : ${e.soketId} / user peerId <button class="man">${e.preeId}</button> <br>`;
+    div.innerHTML += `<button class="user" data-peerId="${e.preeId}" >${e.name}</button>`;
   });
 
-  //##########################################################################################################################
-
-  let buton = document.querySelectorAll(".man");
+  let buton = document.querySelectorAll(".user");
   buton.forEach((e) => {
     e.addEventListener("click", () => {
-      callUser(e.innerHTML);
+      callUser(e.dataset.peerid);
     });
   });
-
-  //##########################################################################################################################
 }
 
 function callUser(preeId) {
@@ -35,8 +36,12 @@ function callUser(preeId) {
     })
     .then((stream) => {
       let call = peer.call(preeId, stream);
+      let vid = document.createElement("video");
       call.on("stream", (stream) => {
-        videoappend(stream);
+        videoappend(vid, stream);
+      });
+      call.on("close", () => {
+        vid.remove();
       });
     })
     .catch((error) => {
@@ -67,9 +72,13 @@ peer.on("call", (call) => {
       video: true,
     })
     .then((stream) => {
+      let vid = document.createElement("video");
       call.answer(stream);
       call.on("stream", (stream) => {
-        videoappend(stream);
+        videoappend(vid, stream);
+      });
+      call.on("close", () => {
+        vid.remove();
       });
     })
     .catch((error) => {
@@ -77,12 +86,13 @@ peer.on("call", (call) => {
     });
 });
 
-function videoappend(stream) {
-  let video = document.getElementById("v1");
+function videoappend(video, stream) {
+  video.classList.add("video");
   video.srcObject = stream;
   video.onloadedmetadata = () => {
     video.play();
   };
+  gridVid.appendChild(video);
 }
 
 // navigator.mediaDevices
